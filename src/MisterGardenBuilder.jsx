@@ -124,7 +124,9 @@ const BASE_PRICE = 11.2;
 const EXTRA_ING_PRICE = 1.5;
 const EXTRA_BONUS_PRICE = 0.5;
 const DOUBLE_SAUCE_PRICE = 0.8;
-const SAUCE_MULT = { half: 0.5, normal: 1, double: 2 };
+const TBSP_ML = 15;
+const TSP_ML = 5;
+const DEFAULT_SAUCE_AMOUNT = { tbsp: 1, tsp: 0 };
 
 // ---------------------------------------------------------------------------
 // TEXTES UI / UI STRINGS
@@ -145,8 +147,9 @@ const STR = {
     breadHint: "Optionnel, pour accompagner.",
     included: "inclus", extra: "suppl.",
     amountLabel: "Quantité de sauce",
-    amountHalf: "½ dose", amountNormal: "Dose normale", amountDouble: "Double (+0,80 €)",
-    amountNote: "Les calories affichées sur les cartes correspondent à la dose normale.",
+    amountTbsp: "Cuillère à soupe", amountTsp: "Cuillère à café",
+    amountTotal: "Volume total",
+    amountNote: "Les calories, macros et le prix se recalculent selon la quantité choisie. Les cartes ci-dessous affichent la valeur pour 1 cuillère à soupe (15 ml). Suppl. : 0,80 € par cuillère à soupe au-delà de la première.",
     yourBowl: "Votre bol",
     emptyBowl: "Choisissez une base pour commencer votre salade…",
     nutrition: "Valeurs nutritionnelles",
@@ -178,8 +181,9 @@ const STR = {
     breadHint: "Optional, on the side.",
     included: "included", extra: "extra",
     amountLabel: "Sauce amount",
-    amountHalf: "½ portion", amountNormal: "Normal", amountDouble: "Double (+€0.80)",
-    amountNote: "Calories shown on the cards are for the normal amount.",
+    amountTbsp: "Tablespoon", amountTsp: "Teaspoon",
+    amountTotal: "Total volume",
+    amountNote: "Calories, macros and price recalculate live from the amount you pick. Cards below show the value for 1 tablespoon (15 ml). Extra: €0.80 per tablespoon beyond the first.",
     yourBowl: "Your bowl",
     emptyBowl: "Pick a base to start your salad…",
     nutrition: "Nutrition facts",
@@ -593,23 +597,25 @@ function computeTotals(sel) {
   sel.ingredients.forEach((id) => add(ALL_INGREDIENTS.find((x) => x.id === id)));
   sel.bonus.forEach((id) => add(BONUS.find((x) => x.id === id)));
 
-  const amount = sel.sauceAmount ?? "normal";
-  const sauceMult = SAUCE_MULT[amount] ?? 1;
+  const amount = sel.sauceAmount ?? DEFAULT_SAUCE_AMOUNT;
+  const sauceMl = amount.tbsp * TBSP_ML + amount.tsp * TSP_ML;
+  const sauceMult = sauceMl / TBSP_ML;
   const hasRealSauce = sel.sauce && sel.sauce !== "none";
   if (hasRealSauce) add(SAUCES.find((x) => x.id === sel.sauce), sauceMult);
   if (sel.pain) add(PAINS.find((x) => x.id === sel.pain));
 
   const extraIngr = Math.max(0, sel.ingredients.length - 4);
   const extraBonus = Math.max(0, sel.bonus.length - 1);
-  const doubleSauce = hasRealSauce && amount === "double";
-  const supp = extraIngr * EXTRA_ING_PRICE + extraBonus * EXTRA_BONUS_PRICE + (doubleSauce ? DOUBLE_SAUCE_PRICE : 0);
+  const extraSauceMl = hasRealSauce ? Math.max(0, sauceMl - TBSP_ML) : 0;
+  const sauceSupp = (extraSauceMl / TBSP_ML) * DOUBLE_SAUCE_PRICE;
+  const supp = extraIngr * EXTRA_ING_PRICE + extraBonus * EXTRA_BONUS_PRICE + sauceSupp;
   const price = BASE_PRICE + supp;
 
   const pk = p * 4, ck = c * 4, fk = f * 9;
   const macroK = Math.max(1, pk + ck + fk);
 
   return {
-    kcal, p, c, f, picked, extraIngr, extraBonus, supp, price, hasEstimate,
+    kcal, p, c, f, picked, extraIngr, extraBonus, sauceMl, sauceSupp, supp, price, hasEstimate,
     pPct: (pk / macroK) * 100, cPct: (ck / macroK) * 100, fPct: (fk / macroK) * 100,
   };
 }
@@ -624,42 +630,42 @@ const PRESETS = [
     name: "L'Équilibrée protéinée", nameEn: "The Protein Balance",
     tagline: "Lentilles-quinoa, poulet, œuf et edamames : le plein de protéines sans exploser le compteur.",
     taglineEn: "Lentil-quinoa, chicken, egg and edamame: protein-packed without blowing the counter.",
-    sel: { baseMode: "half", bases: ["lentilles", "quinoa"], ingredients: ["poulet-herbes", "oeuf-dur", "edamames", "brocolis-grilles"], bonus: ["graines-sesame"], sauce: "citron-olive", sauceAmount: "normal", pain: null },
+    sel: { baseMode: "half", bases: ["lentilles", "quinoa"], ingredients: ["poulet-herbes", "oeuf-dur", "edamames", "brocolis-grilles"], bonus: ["graines-sesame"], sauce: "citron-olive", sauceAmount: DEFAULT_SAUCE_AMOUNT, pain: null },
   },
   {
     id: "legere",
     name: "La Toute Légère", nameEn: "The Featherweight",
     tagline: "Croquant, fraîcheur et thon, le tout sous les 200 kcal.",
     taglineEn: "Crunch, freshness and tuna, all under 200 kcal.",
-    sel: { baseMode: "full", bases: ["iceberg"], ingredients: ["concombres", "radis", "tomates-cerises", "thon"], bonus: ["persil"], sauce: "jus-citron", sauceAmount: "normal", pain: null },
+    sel: { baseMode: "full", bases: ["iceberg"], ingredients: ["concombres", "radis", "tomates-cerises", "thon"], bonus: ["persil"], sauce: "jus-citron", sauceAmount: DEFAULT_SAUCE_AMOUNT, pain: null },
   },
   {
     id: "signature",
     name: "La Signature de saison", nameEn: "The Seasonal Signature",
     tagline: "Inspirée de la carte actuelle : quinoa-épinards, poulet miel-sésame, maïs grillé, avocat, fêta et oignons rouges (1 supplément).",
     taglineEn: "Based on the current menu: quinoa-spinach, honey-sesame chicken, grilled corn, avocado, feta and red onions (1 extra).",
-    sel: { baseMode: "half", bases: ["quinoa", "epinards"], ingredients: ["poulet-miel", "mais-grille", "avocat", "feta", "oignons-rouges"], bonus: ["persil"], sauce: "french-garden", sauceAmount: "normal", pain: null },
+    sel: { baseMode: "half", bases: ["quinoa", "epinards"], ingredients: ["poulet-miel", "mais-grille", "avocat", "feta", "oignons-rouges"], bonus: ["persil"], sauce: "french-garden", sauceAmount: DEFAULT_SAUCE_AMOUNT, pain: null },
   },
   {
     id: "vege",
     name: "La Végé Ponzu", nameEn: "The Ponzu Veggie",
     tagline: "Tofu sésame, edamames, brocolis grillés et concombres smashés, façon asiatique.",
     taglineEn: "Sesame tofu, edamame, grilled broccoli and smashed cucumbers, Asian style.",
-    sel: { baseMode: "full", bases: ["quinoa"], ingredients: ["tofu-soja-sesame", "edamames", "brocolis-grilles", "concombres-smashes"], bonus: ["graines-sesame"], sauce: "ponzu-sesame", sauceAmount: "normal", pain: null },
+    sel: { baseMode: "full", bases: ["quinoa"], ingredients: ["tofu-soja-sesame", "edamames", "brocolis-grilles", "concombres-smashes"], bonus: ["graines-sesame"], sauce: "ponzu-sesame", sauceAmount: DEFAULT_SAUCE_AMOUNT, pain: null },
   },
   {
     id: "italienne",
     name: "L'Italienne", nameEn: "The Italian",
     tagline: "Pâtes-roquette, jambon sec, mozzarella, tomates confites, artichauts et pesto.",
     taglineEn: "Pasta-rocket, cured ham, mozzarella, confit tomatoes, artichokes and pesto.",
-    sel: { baseMode: "half", bases: ["pates", "roquette"], ingredients: ["jambon-sec", "mozzarella", "tomates-confites", "artichauts"], bonus: ["basilic"], sauce: "pesto-garden", sauceAmount: "normal", pain: null },
+    sel: { baseMode: "half", bases: ["pates", "roquette"], ingredients: ["jambon-sec", "mozzarella", "tomates-confites", "artichauts"], bonus: ["basilic"], sauce: "pesto-garden", sauceAmount: DEFAULT_SAUCE_AMOUNT, pain: null },
   },
   {
     id: "reconfort",
     name: "La Réconfortante", nameEn: "The Comfort Bowl",
     tagline: "Boulettes, pommes de terre, emmental, oignons frits et sauce chipotle. On assume complètement.",
     taglineEn: "Meatballs, potatoes, emmental, fried onions and chipotle sauce. No regrets.",
-    sel: { baseMode: "full", bases: ["perles-ble"], ingredients: ["boulettes", "pommes-terre-moutarde", "emmental", "mais-grille"], bonus: ["oignons-frits"], sauce: "smoky-chipotle", sauceAmount: "normal", pain: null },
+    sel: { baseMode: "full", bases: ["perles-ble"], ingredients: ["boulettes", "pommes-terre-moutarde", "emmental", "mais-grille"], bonus: ["oignons-frits"], sauce: "smoky-chipotle", sauceAmount: DEFAULT_SAUCE_AMOUNT, pain: null },
   },
 ];
 
@@ -675,7 +681,7 @@ export default function MisterGardenBuilder() {
   const [ingredients, setIngredients] = useState([]);
   const [bonus, setBonus] = useState([]);
   const [sauce, setSauce] = useState(null);
-  const [sauceAmount, setSauceAmount] = useState("normal");
+  const [sauceAmount, setSauceAmount] = useState(DEFAULT_SAUCE_AMOUNT);
   const [pain, setPain] = useState(null);
   const [activeGroup, setActiveGroup] = useState("chauds");
 
@@ -703,12 +709,23 @@ export default function MisterGardenBuilder() {
   const toggleIngredient = toggleIn(setIngredients);
   const toggleBonus = toggleIn(setBonus);
 
-  const reset = () => { setBases([]); setIngredients([]); setBonus([]); setSauce(null); setSauceAmount("normal"); setPain(null); };
+  const bumpTbsp = (d) =>
+    setSauceAmount((a) => {
+      const tbsp = Math.max(0, Math.min(6, a.tbsp + d));
+      return tbsp * TBSP_ML + a.tsp * TSP_ML > 0 ? { ...a, tbsp } : a;
+    });
+  const bumpTsp = (d) =>
+    setSauceAmount((a) => {
+      const tsp = Math.max(0, Math.min(8, a.tsp + d));
+      return a.tbsp * TBSP_ML + tsp * TSP_ML > 0 ? { ...a, tsp } : a;
+    });
+
+  const reset = () => { setBases([]); setIngredients([]); setBonus([]); setSauce(null); setSauceAmount(DEFAULT_SAUCE_AMOUNT); setPain(null); };
 
   const applyPreset = (preset) => {
     const s = preset.sel;
     setBaseMode(s.baseMode); setBases([...s.bases]); setIngredients([...s.ingredients]);
-    setBonus([...s.bonus]); setSauce(s.sauce); setSauceAmount(s.sauceAmount ?? "normal"); setPain(s.pain);
+    setBonus([...s.bonus]); setSauce(s.sauce); setSauceAmount(s.sauceAmount ?? DEFAULT_SAUCE_AMOUNT); setPain(s.pain);
     setTab("composer");
     if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -798,11 +815,19 @@ export default function MisterGardenBuilder() {
         .step__hint { font-size: 13.5px; color: #6b7986; margin: 2px 0 14px; }
         .step__hint b { color: var(--coral); }
 
-        .modeToggle, .amount { display: inline-flex; border: 1.5px solid var(--ink); border-radius: 999px; overflow: hidden; margin-bottom: 14px; }
-        .modeToggle button, .amount button { border: none; background: transparent; padding: 7px 16px; font-family: 'Jost', sans-serif; font-size: 12.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink); font-weight: 600; }
-        .modeToggle button.on, .amount button.on { background: var(--ink); color: #fff; }
-        .amountRow { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 4px; }
-        .amountRow label { font-size: 13px; font-weight: 700; }
+        .modeToggle { display: inline-flex; border: 1.5px solid var(--ink); border-radius: 999px; overflow: hidden; margin-bottom: 14px; }
+        .modeToggle button { border: none; background: transparent; padding: 7px 16px; font-family: 'Jost', sans-serif; font-size: 12.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink); font-weight: 600; }
+        .modeToggle button.on { background: var(--ink); color: #fff; }
+        .amountRow { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; margin-bottom: 8px; }
+        .amountRow label { font-size: 13px; font-weight: 700; width: 100%; }
+        .stepperGroup { display: flex; align-items: center; gap: 9px; }
+        .stepperGroup__label { font-size: 12.5px; color: #5a6975; font-weight: 600; }
+        .stepper { display: inline-flex; align-items: center; border: 1.5px solid var(--ink); border-radius: 999px; overflow: hidden; }
+        .stepper button { border: none; background: transparent; width: 28px; height: 28px; font-family: 'Jost', sans-serif; font-weight: 700; font-size: 15px; color: var(--ink); line-height: 1; display: grid; place-items: center; }
+        .stepper button:hover:not(:disabled) { background: var(--ink); color: #fff; }
+        .stepper button:disabled { color: #c7ccd1; cursor: default; }
+        .stepper__val { min-width: 22px; text-align: center; font-family: 'Jost', sans-serif; font-weight: 700; font-size: 13px; color: var(--ink); }
+        .amountTotal { font-size: 12.5px; font-weight: 700; color: var(--ink); margin: 0 0 4px; }
         .amountNote { font-size: 11.5px; color: #8a94a0; margin: 0 0 12px; }
 
         .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
@@ -834,15 +859,15 @@ export default function MisterGardenBuilder() {
         .counter__pill--extra { background: var(--coral); color: #fff; }
 
         .summary { position: sticky; top: 16px; display: flex; flex-direction: column; gap: 16px; }
-        .bowlCard { background: var(--ink); border-radius: 18px; padding: 20px 18px 0; overflow: hidden; color: #fff; }
+        .bowlCard { background: var(--ink); border-radius: 18px; padding: 20px 18px 0; color: #fff; }
         .bowlCard__title { font-family: 'Jost', sans-serif; font-size: 13px; letter-spacing: .3em; text-transform: uppercase; color: var(--powder); text-align: center; margin-bottom: 6px; }
-        .bowl { position: relative; height: 172px; }
-        .bowl__items { position: absolute; inset: 0 0 52px 0; display: flex; flex-wrap: wrap; align-content: flex-end; justify-content: center; gap: 2px 4px; padding: 0 30px; overflow: hidden; }
+        .bowl { position: relative; padding-bottom: 66px; }
+        .bowl__items { position: relative; z-index: 1; min-height: 106px; display: flex; flex-wrap: wrap; align-content: flex-end; justify-content: center; gap: 6px 8px; padding: 14px 26px 10px; }
         .bowl__items .ico { width: 27px; height: 27px; animation: pop .25s ease; }
         @media (prefers-reduced-motion: reduce) { .bowl__items .ico { animation: none; } }
         @keyframes pop { from { transform: scale(0) rotate(-20deg); } to { transform: scale(1) rotate(0); } }
         .bowl__shape { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 230px; height: 66px; background: var(--paper); border-radius: 0 0 130px 130px; box-shadow: 0 -3px 0 var(--coral); }
-        .bowl__empty { position: absolute; inset: 0 0 60px 0; display: grid; place-items: center; color: #8fa5b8; font-size: 13.5px; font-style: italic; padding: 0 30px; text-align: center; }
+        .bowl__empty { position: absolute; inset: 0 0 66px 0; display: grid; place-items: center; color: #8fa5b8; font-size: 13.5px; font-style: italic; padding: 0 30px; text-align: center; }
 
         .label { background: var(--card); border: 2px solid var(--ink); border-radius: 14px; padding: 16px 16px 14px; }
         .label__title { font-family: 'Jost', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: .18em; text-transform: uppercase; border-bottom: 6px solid var(--ink); padding-bottom: 7px; margin-bottom: 10px; }
@@ -1037,12 +1062,27 @@ export default function MisterGardenBuilder() {
               <>
                 <div className="amountRow">
                   <label>{t.amountLabel}</label>
-                  <div className="amount" role="tablist">
-                    <button className={sauceAmount === "half" ? "on" : ""} onClick={() => setSauceAmount("half")}>{t.amountHalf}</button>
-                    <button className={sauceAmount === "normal" ? "on" : ""} onClick={() => setSauceAmount("normal")}>{t.amountNormal}</button>
-                    <button className={sauceAmount === "double" ? "on" : ""} onClick={() => setSauceAmount("double")}>{t.amountDouble}</button>
+                  <div className="stepperGroup">
+                    <span className="stepperGroup__label">{t.amountTbsp} (15 ml)</span>
+                    <div className="stepper" role="group" aria-label={t.amountTbsp}>
+                      <button type="button" onClick={() => bumpTbsp(-1)} disabled={sauceAmount.tbsp === 0} aria-label="−1">−</button>
+                      <span className="stepper__val">{sauceAmount.tbsp}</span>
+                      <button type="button" onClick={() => bumpTbsp(1)} aria-label="+1">+</button>
+                    </div>
+                  </div>
+                  <div className="stepperGroup">
+                    <span className="stepperGroup__label">{t.amountTsp} (5 ml)</span>
+                    <div className="stepper" role="group" aria-label={t.amountTsp}>
+                      <button type="button" onClick={() => bumpTsp(-1)} disabled={sauceAmount.tsp === 0} aria-label="−1">−</button>
+                      <span className="stepper__val">{sauceAmount.tsp}</span>
+                      <button type="button" onClick={() => bumpTsp(1)} aria-label="+1">+</button>
+                    </div>
                   </div>
                 </div>
+                <p className="amountTotal">
+                  {t.amountTotal}: <b>{totals.sauceMl} ml</b>
+                  {totals.sauceSupp > 0.004 ? ` · +${euro(totals.sauceSupp)}` : ""}
+                </p>
                 <p className="amountNote">{t.amountNote}</p>
               </>
             )}
