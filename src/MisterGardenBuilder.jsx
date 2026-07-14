@@ -765,7 +765,7 @@ export default function MisterGardenBuilder() {
           min-height: 100vh; padding-bottom: 96px;
         }
         .mg * { box-sizing: border-box; }
-        .mg button { font-family: inherit; cursor: pointer; }
+        .mg button { font-family: inherit; cursor: pointer; color: inherit; }
         .ico { width: 36px; height: 36px; display: block; }
 
         .hero { position: relative; background: var(--ink); color: #fff; padding: 32px 20px 26px; text-align: center; }
@@ -814,7 +814,7 @@ export default function MisterGardenBuilder() {
         .card:hover { transform: translateY(-2px); border-color: var(--powder); }
         .card:focus-visible, .scard:focus-visible { outline: 3px solid var(--powder); outline-offset: 2px; }
         .card--on { background: var(--coral-soft); border-color: var(--coral); }
-        .card__name { font-size: 12.5px; font-weight: 700; line-height: 1.25; }
+        .card__name { font-size: 12.5px; font-weight: 700; line-height: 1.25; color: var(--ink); }
         .card__kcal { font-size: 11.5px; color: #7a8794; }
         .card__check { position: absolute; top: 6px; right: 8px; width: 18px; height: 18px; border-radius: 50%; background: var(--coral); color: #fff; font-size: 11px; font-weight: 700; display: grid; place-items: center; }
         .card__badge { position: absolute; top: 6px; left: 8px; background: var(--powder); color: var(--ink-deep); font-size: 10px; font-weight: 700; border-radius: 999px; padding: 2px 6px; }
@@ -825,7 +825,7 @@ export default function MisterGardenBuilder() {
         .scard--on { background: var(--coral-soft); border-color: var(--coral); }
         .scard .ico { flex: none; margin-top: 2px; }
         .scard__body { display: flex; flex-direction: column; gap: 3px; }
-        .scard__name { font-size: 13.5px; font-weight: 700; }
+        .scard__name { font-size: 13.5px; font-weight: 700; color: var(--ink); }
         .scard__desc { font-size: 12px; color: #6b7986; line-height: 1.4; }
         .scard__kcal { font-size: 11.5px; color: #7a8794; font-weight: 700; }
 
@@ -873,7 +873,7 @@ export default function MisterGardenBuilder() {
         .sug { max-width: 1180px; margin: 0 auto; padding: 26px 18px 0; }
         .sug__grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
         .pcard { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 10px; }
-        .pcard__name { font-family: 'Jost', sans-serif; font-weight: 600; font-size: 18px; letter-spacing: .08em; text-transform: uppercase; }
+        .pcard__name { font-family: 'Jost', sans-serif; font-weight: 600; font-size: 18px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink); }
         .pcard__tag { font-size: 13.5px; color: #5a6975; line-height: 1.5; min-height: 40px; }
         .pcard__icons { display: flex; gap: 4px; flex-wrap: wrap; }
         .pcard__icons .ico { width: 26px; height: 26px; }
