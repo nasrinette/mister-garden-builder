@@ -90,19 +90,22 @@ const BONUS = [
   { id: "jalapenos", name: "Piments jalapeños", en: "Jalapeño peppers", icon: ["chili", "#5c9143"], kcal: 5, p: 0.2, c: 1, f: 0.1, est: true },
 ];
 
+// Rebased to a 15 ml (1 tbsp) reference dose: pure olive oil at 15 ml is
+// ~120 kcal (13.3 g fat × 9 kcal/g), so every sauce below is the original
+// per-portion figure scaled by 120/315 (huile-olive's old 35 g-fat dose).
 const SAUCES = [
-  { id: "huile-olive", name: "Huile d'olive", en: "Olive oil", icon: ["bottle", "#c9b037"], kcal: 315.0, p: 0, c: 0, f: 35, desc: "Huile d'olive pure, pour les puristes.", descEn: "Pure olive oil, for purists." },
-  { id: "jus-citron", name: "Jus de citron pur", en: "Pure lemon juice", icon: ["lemon", "#f2d541"], kcal: 9.1, p: 0.1, c: 2.7, f: 0, desc: "100 % citron pressé, zéro matière grasse.", descEn: "100% pressed lemon, zero fat." },
-  { id: "balsamique", name: "Sauce Balsamique", en: "Balsamic dressing", icon: ["bottle", "#5a3a2e"], kcal: 221.4, p: 0.3, c: 6, f: 21.5, desc: "Huile d'olive et vinaigre balsamique, le duo classique.", descEn: "Olive oil and balsamic vinegar, the classic duo." },
-  { id: "moutardee", name: "Sauce Moutardée", en: "Mustard dressing", icon: ["bottle", "#d8a72c"], kcal: 195, p: 0.8, c: 4, f: 19.5, est: true, desc: "Vinaigrette bien relevée à la moutarde, sur base d'huile de colza.", descEn: "A punchy mustard vinaigrette on a rapeseed-oil base." },
-  { id: "miel-moutarde", name: "Sauce Miel-Moutarde", en: "Honey-mustard", icon: ["bottle", "#e0b13e"], kcal: 177.1, p: 0.7, c: 10, f: 15, desc: "Colza, vinaigre de cidre, miel et moutarde à l'ancienne : sucrée-piquante.", descEn: "Rapeseed oil, cider vinegar, honey and wholegrain mustard: sweet and tangy." },
-  { id: "pesto-garden", name: "Sauce Pesto Garden", en: "Pesto Garden", icon: ["bottle", "#6f9b3c"], kcal: 126.7, p: 1.5, c: 2, f: 12.5, desc: "Roquette, basilic, noisette et parmesan mixés à l'huile.", descEn: "Rocket, basil, hazelnut and parmesan blended with oil." },
-  { id: "french-garden", name: "Sauce French Garden", en: "French Garden", icon: ["bottle", "#caa25a"], kcal: 210.4, p: 0.5, c: 4, f: 21, desc: "Colza, vinaigre de vin, échalote et moutarde : la vinaigrette maison.", descEn: "Rapeseed oil, wine vinegar, shallot and mustard: the house vinaigrette." },
-  { id: "citron-olive", name: "Sauce Citron & Olive", en: "Lemon & Olive", icon: ["bottle", "#dfd35a"], kcal: 212.5, p: 0.3, c: 4, f: 21.5, desc: "Huile d'olive réveillée au jus de citron.", descEn: "Olive oil brightened with lemon juice." },
-  { id: "exotique-garden", name: "Sauce Exotique Garden", en: "Exotique Garden", icon: ["bottle", "#f2a03d"], kcal: 107.8, p: 0.5, c: 8, f: 8, est: true, desc: "Fruit de la passion, avocat et jalapeño : fruitée et pimentée, l'une des plus légères.", descEn: "Passion fruit, avocado and jalapeño: fruity and spicy, one of the lightest." },
-  { id: "smoky-chipotle", name: "Sauce Smoky Mayo Chipotle", en: "Smoky Mayo Chipotle", icon: ["bottle", "#e07a5f"], kcal: 220, p: 0.5, c: 2.5, f: 23, est: true, desc: "Mayonnaise au paprika fumé et piment chipotle : crémeuse, fumée, un peu relevée.", descEn: "Smoked-paprika and chipotle mayo: creamy, smoky, gently hot." },
-  { id: "ponzu-sesame", name: "Sauce Ponzu Sésame", en: "Ponzu Sesame", icon: ["bottle", "#8a5a3b"], kcal: 130, p: 1, c: 6, f: 11, est: true, desc: "Huile de sésame, soja et agrumes (yuzu, mandarine) : umami et acidulée.", descEn: "Sesame oil, soy and citrus (yuzu, mandarin): umami and zesty." },
-  { id: "caesarita", name: "Sauce Caesarita", en: "Caesarita", icon: ["bottle", "#efe9d8"], kcal: 106.4, p: 1.5, c: 3, f: 9.5, desc: "Yaourt, parmesan et Worcestershire : l'esprit caesar en plus léger.", descEn: "Yogurt, parmesan and Worcestershire: caesar spirit, lighter." },
+  { id: "huile-olive", name: "Huile d'olive", en: "Olive oil", icon: ["bottle", "#c9b037"], kcal: 120.0, p: 0, c: 0, f: 13.3, est: true, desc: "Huile d'olive pure, pour les puristes.", descEn: "Pure olive oil, for purists." },
+  { id: "jus-citron", name: "Jus de citron pur", en: "Pure lemon juice", icon: ["lemon", "#f2d541"], kcal: 3.5, p: 0.0, c: 1.0, f: 0, est: true, desc: "100 % citron pressé, zéro matière grasse.", descEn: "100% pressed lemon, zero fat." },
+  { id: "balsamique", name: "Sauce Balsamique", en: "Balsamic dressing", icon: ["bottle", "#5a3a2e"], kcal: 84.3, p: 0.1, c: 2.3, f: 8.2, est: true, desc: "Huile d'olive et vinaigre balsamique, le duo classique.", descEn: "Olive oil and balsamic vinegar, the classic duo." },
+  { id: "moutardee", name: "Sauce Moutardée", en: "Mustard dressing", icon: ["bottle", "#d8a72c"], kcal: 74.3, p: 0.3, c: 1.5, f: 7.4, est: true, desc: "Vinaigrette bien relevée à la moutarde, sur base d'huile de colza.", descEn: "A punchy mustard vinaigrette on a rapeseed-oil base." },
+  { id: "miel-moutarde", name: "Sauce Miel-Moutarde", en: "Honey-mustard", icon: ["bottle", "#e0b13e"], kcal: 67.5, p: 0.3, c: 3.8, f: 5.7, est: true, desc: "Colza, vinaigre de cidre, miel et moutarde à l'ancienne : sucrée-piquante.", descEn: "Rapeseed oil, cider vinegar, honey and wholegrain mustard: sweet and tangy." },
+  { id: "pesto-garden", name: "Sauce Pesto Garden", en: "Pesto Garden", icon: ["bottle", "#6f9b3c"], kcal: 48.3, p: 0.6, c: 0.8, f: 4.8, est: true, desc: "Roquette, basilic, noisette et parmesan mixés à l'huile.", descEn: "Rocket, basil, hazelnut and parmesan blended with oil." },
+  { id: "french-garden", name: "Sauce French Garden", en: "French Garden", icon: ["bottle", "#caa25a"], kcal: 80.2, p: 0.2, c: 1.5, f: 8.0, est: true, desc: "Colza, vinaigre de vin, échalote et moutarde : la vinaigrette maison.", descEn: "Rapeseed oil, wine vinegar, shallot and mustard: the house vinaigrette." },
+  { id: "citron-olive", name: "Sauce Citron & Olive", en: "Lemon & Olive", icon: ["bottle", "#dfd35a"], kcal: 81.0, p: 0.1, c: 1.5, f: 8.2, est: true, desc: "Huile d'olive réveillée au jus de citron.", descEn: "Olive oil brightened with lemon juice." },
+  { id: "exotique-garden", name: "Sauce Exotique Garden", en: "Exotique Garden", icon: ["bottle", "#f2a03d"], kcal: 41.1, p: 0.2, c: 3.0, f: 3.0, est: true, desc: "Fruit de la passion, avocat et jalapeño : fruitée et pimentée, l'une des plus légères.", descEn: "Passion fruit, avocado and jalapeño: fruity and spicy, one of the lightest." },
+  { id: "smoky-chipotle", name: "Sauce Smoky Mayo Chipotle", en: "Smoky Mayo Chipotle", icon: ["bottle", "#e07a5f"], kcal: 83.8, p: 0.2, c: 1.0, f: 8.8, est: true, desc: "Mayonnaise au paprika fumé et piment chipotle : crémeuse, fumée, un peu relevée.", descEn: "Smoked-paprika and chipotle mayo: creamy, smoky, gently hot." },
+  { id: "ponzu-sesame", name: "Sauce Ponzu Sésame", en: "Ponzu Sesame", icon: ["bottle", "#8a5a3b"], kcal: 49.5, p: 0.4, c: 2.3, f: 4.2, est: true, desc: "Huile de sésame, soja et agrumes (yuzu, mandarine) : umami et acidulée.", descEn: "Sesame oil, soy and citrus (yuzu, mandarin): umami and zesty." },
+  { id: "caesarita", name: "Sauce Caesarita", en: "Caesarita", icon: ["bottle", "#efe9d8"], kcal: 40.5, p: 0.6, c: 1.1, f: 3.6, est: true, desc: "Yaourt, parmesan et Worcestershire : l'esprit caesar en plus léger.", descEn: "Yogurt, parmesan and Worcestershire: caesar spirit, lighter." },
   { id: "none", name: "Sans sauce", en: "No sauce", icon: ["bottleNo", "#9aa6b0"], kcal: 0, p: 0, c: 0, f: 0, desc: "Nature, telle quelle.", descEn: "As is, no dressing." },
 ];
 
@@ -155,7 +158,7 @@ const STR = {
     nutrition: "Valeurs nutritionnelles",
     energy: "Énergie", protein: "Protéines*", carbs: "Glucides*", fat: "Lipides*",
     lProt: "Protéines", lCarb: "Glucides", lFat: "Lipides",
-    note: "Calories sans « ≈ » : tableau officiel Mister Garden (juillet 2022), par portion servie. « ≈ » : produit récent, valeur estimée. *Macros toujours estimées, la marque ne publiant que l'énergie (grammages non communiqués).",
+    note: "Calories sans « ≈ » : tableau officiel Mister Garden (juillet 2022), par portion servie. « ≈ » : produit récent (valeur estimée) ou sauce recalculée pour une dose de 1 cuillère à soupe (15 ml), calibrée sur l'huile d'olive pure (≈ 120 kcal / 15 ml). *Macros toujours estimées, la marque ne publiant que l'énergie (grammages non communiqués).",
     priceTitle: "Prix estimé",
     priceFrom: "(formule salade, à partir de)",
     priceSupp: "+ suppléments",
@@ -189,7 +192,7 @@ const STR = {
     nutrition: "Nutrition facts",
     energy: "Energy", protein: "Protein*", carbs: "Carbs*", fat: "Fat*",
     lProt: "Protein", lCarb: "Carbs", lFat: "Fat",
-    note: "Calories without \u201c≈\u201d: official Mister Garden table (July 2022), per serving. \u201c≈\u201d: recent item, estimated value. *Macros are always estimates: the brand only publishes energy (portion weights not disclosed).",
+    note: "Calories without \u201c≈\u201d: official Mister Garden table (July 2022), per serving. \u201c≈\u201d: recent item (estimated value) or a sauce recalculated for a 1-tablespoon (15 ml) dose, calibrated against pure olive oil (≈ 120 kcal / 15 ml). *Macros are always estimates: the brand only publishes energy (portion weights not disclosed).",
     priceTitle: "Estimated price",
     priceFrom: "(salad formula, from)",
     priceSupp: "+ extras",
