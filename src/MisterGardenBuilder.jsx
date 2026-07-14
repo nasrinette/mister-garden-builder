@@ -932,7 +932,7 @@ export default function MisterGardenBuilder() {
         .chip { display: inline-flex; align-items: center; gap: 6px; background: var(--powder-soft); border-radius: 999px; padding: 4px 10px 4px 6px; font-size: 12px; font-weight: 700; }
         .chip .ico { width: 15px; height: 15px; }
 
-        .resetBtn { border: 1.5px solid var(--ink); background: transparent; color: var(--ink); border-radius: 999px; padding: 9px 18px; font-family: 'Jost', sans-serif; font-size: 12.5px; letter-spacing: .14em; text-transform: uppercase; font-weight: 600; align-self: flex-start; }
+        .summary .resetBtn { border: 1.5px solid var(--ink); background: transparent; color: var(--ink); border-radius: 999px; padding: 9px 18px; font-family: 'Jost', sans-serif; font-size: 12.5px; letter-spacing: .14em; text-transform: uppercase; font-weight: 600; align-self: flex-start; }
         .resetBtn:hover { background: var(--ink); color: #fff; }
 
         .sug { max-width: 1180px; margin: 0 auto; padding: 26px 18px 0; }
@@ -944,7 +944,7 @@ export default function MisterGardenBuilder() {
         .pcard__icons .ico { width: 26px; height: 26px; }
         .pcard__stats { display: flex; gap: 14px; font-size: 13px; font-weight: 700; flex-wrap: wrap; }
         .pcard__stats b { font-family: 'Jost', sans-serif; font-size: 17px; color: var(--coral); }
-        .pcard__btn { margin-top: auto; border: none; background: var(--ink); color: #fff; border-radius: 999px; padding: 10px 16px; font-family: 'Jost', sans-serif; font-size: 12.5px; letter-spacing: .14em; text-transform: uppercase; font-weight: 600; }
+        .pcard .pcard__btn { margin-top: auto; border: none; background: var(--ink); color: #fff; border-radius: 999px; padding: 10px 16px; font-family: 'Jost', sans-serif; font-size: 12.5px; letter-spacing: .14em; text-transform: uppercase; font-weight: 600; }
         .pcard__btn:hover { background: var(--coral); }
 
         .mobilebar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--ink); color: #fff; display: flex; justify-content: space-between; align-items: center; padding: 12px 18px; font-family: 'Jost', sans-serif; z-index: 50; }
