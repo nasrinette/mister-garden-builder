@@ -901,7 +901,7 @@ export default function MisterGardenBuilder() {
         .summary { position: sticky; top: 16px; display: flex; flex-direction: column; gap: 16px; }
         .bowlCard { background: var(--ink); border-radius: 18px; padding: 20px 18px 0; color: #fff; }
         .bowlCard__title { font-family: 'Jost', sans-serif; font-size: 13px; letter-spacing: .3em; text-transform: uppercase; color: var(--powder); text-align: center; margin-bottom: 6px; }
-        .bowl { position: relative; padding-bottom: 66px; }
+        .bowl { position: relative; padding-bottom: 66px; min-height: 172px; }
         .bowl__items { position: relative; z-index: 1; min-height: 106px; display: flex; flex-wrap: wrap; align-content: flex-end; justify-content: center; gap: 6px 8px; padding: 14px 26px 10px; }
         .bowl__items .ico { width: 27px; height: 27px; animation: pop .25s ease; }
         @media (prefers-reduced-motion: reduce) { .bowl__items .ico { animation: none; } }
