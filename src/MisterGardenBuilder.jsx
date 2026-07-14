@@ -144,7 +144,7 @@ const STR = {
     stepBase: "Base", stepIngr: "Ingrédients", stepBonus: "Bonus", stepSauce: "Sauce", stepBread: "Le pain",
     baseHint: ["1 base entière ", "ou", " 2 demi-bases. Obligatoire."],
     mode1: "1 base", mode2: "2 demi-bases",
-    ingrHint: ["4 ingrédients inclus, puis ", "1,50 €", " par ingrédient supplémentaire."],
+    ingrHint: ["4 ingrédients inclus, puis ", "1,50 €", " par ingrédient supplémentaire. Un même ingrédient peut être pris plusieurs fois (ex. 2× poulet)."],
     bonusHint: ["1 bonus inclus, puis ", "0,50 €", " par bonus supplémentaire."],
     sauceHint: ["1 sauce au choix, obligatoire (« sans sauce » compte comme un choix). Ajustez la ", "quantité", " ci-dessous."],
     breadHint: "Optionnel, pour accompagner.",
@@ -178,7 +178,7 @@ const STR = {
     stepBase: "Base", stepIngr: "Ingredients", stepBonus: "Bonus", stepSauce: "Sauce", stepBread: "Bread",
     baseHint: ["1 full base ", "or", " 2 half bases. Required."],
     mode1: "1 base", mode2: "2 half bases",
-    ingrHint: ["4 ingredients included, then ", "€1.50", " per extra ingredient."],
+    ingrHint: ["4 ingredients included, then ", "€1.50", " per extra ingredient. The same ingredient can be picked more than once (e.g. 2× chicken)."],
     bonusHint: ["1 bonus included, then ", "€0.50", " per extra bonus."],
     sauceHint: ["Pick one sauce, required (\u201cno sauce\u201d counts as a choice). Adjust the ", "amount", " below."],
     breadHint: "Optional, on the side.",
@@ -709,8 +709,17 @@ export default function MisterGardenBuilder() {
 
   const toggleIn = (setter) => (id) =>
     setter((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
-  const toggleIngredient = toggleIn(setIngredients);
   const toggleBonus = toggleIn(setBonus);
+
+  const MAX_INGREDIENT_QTY = 5;
+  const ingredientQty = (id) => ingredients.filter((x) => x === id).length;
+  const incIngredient = (id) =>
+    setIngredients((prev) => (prev.filter((x) => x === id).length >= MAX_INGREDIENT_QTY ? prev : [...prev, id]));
+  const decIngredient = (id) =>
+    setIngredients((prev) => {
+      const idx = prev.lastIndexOf(id);
+      return idx === -1 ? prev : [...prev.slice(0, idx), ...prev.slice(idx + 1)];
+    });
 
   const bumpTbsp = (d) =>
     setSauceAmount((a) => {
@@ -748,6 +757,13 @@ export default function MisterGardenBuilder() {
   const activeItems = INGREDIENT_GROUPS.find((g) => g.key === activeGroup)?.items ?? [];
   const showAmount = sauce && sauce !== "none";
 
+  const chipGroups = [];
+  const chipIndex = new Map();
+  totals.picked.forEach((it) => {
+    if (chipIndex.has(it.id)) chipGroups[chipIndex.get(it.id)].count += 1;
+    else { chipIndex.set(it.id, chipGroups.length); chipGroups.push({ item: it, count: 1 }); }
+  });
+
   const Card = ({ item, selected, onClick, sub, badge }) => (
     <button className={`card ${selected ? "card--on" : ""}`} onClick={onClick} aria-pressed={selected}>
       <Ico icon={item.icon} />
@@ -756,6 +772,21 @@ export default function MisterGardenBuilder() {
       {badge && <span className="card__badge">{badge}</span>}
       {selected && <span className="card__check" aria-hidden="true">✓</span>}
     </button>
+  );
+
+  const QtyCard = ({ item, qty, onInc, onDec }) => (
+    <div className={`card qcard ${qty > 0 ? "card--on" : ""}`}>
+      <button type="button" className="qcard__hit" onClick={onInc} aria-label={`${L(item)} +1`}>
+        <Ico icon={item.icon} />
+        <span className="card__name">{L(item)}</span>
+        <span className="card__kcal">{kcalTxt(item)}</span>
+      </button>
+      {qty > 0 && (
+        <button type="button" className="qcard__minus" onClick={onDec} aria-label={`${L(item)} −1`}>−</button>
+      )}
+      {qty === 1 && <span className="card__check" aria-hidden="true">✓</span>}
+      {qty > 1 && <span className="qcard__qty" aria-hidden="true">×{qty}</span>}
+    </div>
   );
 
   const SauceCard = ({ item }) => {
@@ -846,6 +877,12 @@ export default function MisterGardenBuilder() {
         .card__kcal { font-size: 11.5px; color: #7a8794; }
         .card__check { position: absolute; top: 6px; right: 8px; width: 18px; height: 18px; border-radius: 50%; background: var(--coral); color: #fff; font-size: 11px; font-weight: 700; display: grid; place-items: center; }
         .card__badge { position: absolute; top: 6px; left: 8px; background: var(--powder); color: var(--ink-deep); font-size: 10px; font-weight: 700; border-radius: 999px; padding: 2px 6px; }
+
+        .qcard { padding: 0; }
+        .qcard__hit { display: flex; flex-direction: column; align-items: center; gap: 5px; width: 100%; background: transparent; border: none; padding: 12px 8px 10px; text-align: center; }
+        .qcard .qcard__minus { position: absolute; top: 6px; left: 8px; width: 20px; height: 20px; border-radius: 50%; background: var(--ink); color: #fff; font-size: 13px; font-weight: 700; line-height: 1; display: grid; place-items: center; padding: 0; }
+        .qcard .qcard__minus:hover { background: var(--coral); }
+        .qcard__qty { position: absolute; top: 6px; right: 8px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: var(--coral); color: #fff; font-size: 10.5px; font-weight: 700; display: grid; place-items: center; }
 
         .sgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; }
         .scard { position: relative; display: flex; gap: 12px; align-items: flex-start; background: var(--paper); border: 1.5px solid var(--line); border-radius: 14px; padding: 12px; text-align: left; transition: border-color .12s ease, background .12s ease; }
@@ -1015,7 +1052,7 @@ export default function MisterGardenBuilder() {
             <p className="step__hint">{t.ingrHint[0]}<b>{t.ingrHint[1]}</b>{t.ingrHint[2]}</p>
             <div className="tabs">
               {INGREDIENT_GROUPS.map((g) => {
-                const n = g.items.filter((it) => ingredients.includes(it.id)).length;
+                const n = g.items.reduce((sum, it) => sum + ingredientQty(it.id), 0);
                 return (
                   <button key={g.key} className={activeGroup === g.key ? "on" : ""} onClick={() => setActiveGroup(g.key)}>
                     {lang === "en" ? g.labelEn : g.label}{n > 0 ? ` · ${n}` : ""}
@@ -1025,7 +1062,13 @@ export default function MisterGardenBuilder() {
             </div>
             <div className="grid">
               {activeItems.map((it) => (
-                <Card key={it.id} item={it} selected={ingredients.includes(it.id)} onClick={() => toggleIngredient(it.id)} />
+                <QtyCard
+                  key={it.id}
+                  item={it}
+                  qty={ingredientQty(it.id)}
+                  onInc={() => incIngredient(it.id)}
+                  onDec={() => decIngredient(it.id)}
+                />
               ))}
             </div>
           </section>
@@ -1162,9 +1205,9 @@ export default function MisterGardenBuilder() {
           {totals.picked.length > 0 && (
             <div className="price">
               <div className="chips">
-                {totals.picked.map((it, i) => (
-                  <span key={`${it.id}-chip-${i}`} className="chip">
-                    <Ico icon={it.icon} /> {L(it)}
+                {chipGroups.map(({ item, count }) => (
+                  <span key={`${item.id}-chip`} className="chip">
+                    <Ico icon={item.icon} /> {L(item)}{count > 1 ? ` ×${count}` : ""}
                   </span>
                 ))}
               </div>
